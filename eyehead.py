@@ -21,9 +21,12 @@ head_violation_counter = 0
 CALIBRATION_DURATION = 5  # seconds
 
 # Fixed tolerance band (adjust if needed)
-HORIZONTAL_TOL = 0.08
-VERTICAL_TOL = 0.08
+HORIZONTAL_TOL = 0.06  # Reduced from 0.08
+VERTICAL_TOL = 0.06  # Reduced from 0.08
 HEAD_TOL = 80   # pixels from screen center (adjust as needed)
+
+# Update head tracking to use head angle only
+HEAD_ANGLE_TOL = 2  # degrees
 
 # --- smoothing (moving average) ---
 SMOOTHING_WINDOW = 5
@@ -115,7 +118,39 @@ while cap.isOpened():
                     head_violation_counter += 1
                     outside_head_frame_count = 0
             else:
-                outside_head_frame_count = 0
+                outside_head_frame_count = max(0, outside_head_frame_count - 1)  # Gradual reset to avoid jitter
+
+            # Calculate head angle using eye landmarks
+            left_eye = np.array([landmarks[LEFT_EYE_IDX[0]].x * w, landmarks[LEFT_EYE_IDX[0]].y * h])
+            right_eye = np.array([landmarks[RIGHT_EYE_IDX[0]].x * w, landmarks[RIGHT_EYE_IDX[0]].y * h])
+
+            # Vector between eyes
+            eye_vector = right_eye - left_eye
+
+            # Calculate head angle relative to horizontal axis
+            head_angle = np.degrees(np.arctan2(eye_vector[1], eye_vector[0]))
+
+            # Calculate head bounding box
+            head_x_min = int(min(left_eye[0], right_eye[0], nose_x))
+            head_x_max = int(max(left_eye[0], right_eye[0], nose_x))
+            head_y_min = int(min(left_eye[1], right_eye[1], nose_y))
+            head_y_max = int(max(left_eye[1], right_eye[1], nose_y))
+
+            # Draw bounding box around the head
+            cv2.rectangle(frame, (head_x_min, head_y_min), (head_x_max, head_y_max), (0, 255, 0), 2)
+
+            # Check if head angle exceeds tolerance
+            if abs(head_angle) > HEAD_ANGLE_TOL:
+                outside_head_frame_count += 1
+                if outside_head_frame_count >= OUTSIDE_FRAMES_REQUIRED:
+                    head_violation_counter += 1
+                    outside_head_frame_count = 0
+            else:
+                outside_head_frame_count = max(0, outside_head_frame_count - 1)  # Gradual reset
+
+            # Display head angle and bounding box for debugging
+            cv2.putText(frame, f"Head Angle: {head_angle:.2f} deg", (50, 120),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
 
             # Display status
             cv2.putText(frame, "Tracking...", (50, 50),
