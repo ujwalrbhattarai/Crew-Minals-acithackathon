@@ -1,11 +1,11 @@
 {
-    "timestamp": "2025-08-29 11:39:29",
-    "score": 0,
+    "timestamp": "2025-08-29 12:13:50",
+    "score": 2,
     "total_questions": 2,
-    "percentage": 0.0,
-    "time_taken_minutes": 1.9,
-    "time_remaining_minutes": 28.1,
-    "status": "Needs Improvement",
+    "percentage": 100.0,
+    "time_taken_minutes": 1.8,
+    "time_remaining_minutes": 28.2,
+    "status": "Excellent",
     "monitoring_flags": [
         "Face detection: Active",
         "Network monitoring: Stable",
