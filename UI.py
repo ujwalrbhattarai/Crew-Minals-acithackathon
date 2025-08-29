@@ -157,56 +157,78 @@ class ProctorYApp:
         self.timer_display.pack()
         
 
-    # Monitoring controls (Top row of right panel)
-    controls_frame = tk.Frame(self.monitor_frame, bg=self.colors["bg_secondary"])
-    controls_frame.pack(fill="x", padx=5, pady=(0, 5))
-    tk.Label(controls_frame, text="🔧 Monitor Controls",
-        font=("Arial", 10, "bold"),
-        bg=self.colors["bg_secondary"],
-        fg=self.colors["text_secondary"]).pack()
-    btn_frame = tk.Frame(controls_frame, bg=self.colors["bg_secondary"])
-    btn_frame.pack(fill="x", pady=5)
-    # Add buttons for each script
-    script_buttons = [
-        ("Devices", self.show_devices_monitor),
-        ("Network", self.show_network_monitor),
-        ("Background Apps", self.show_background_apps),
-        ("Eye/Head Tracking", self.show_eyehead_tracking)
-    ]
-    for i, (text, cmd) in enumerate(script_buttons):
-        btn = tk.Button(btn_frame, text=text, font=("Arial", 8),
-               bg=self.colors["accent"], fg="white",
-               relief="flat", bd=0, width=14, height=2,
-               command=cmd)
-        btn.grid(row=i//2, column=i%2, padx=2, pady=2, sticky="ew")
-    btn_frame.grid_columnconfigure(0, weight=1)
-    btn_frame.grid_columnconfigure(1, weight=1)
+    def create_exam_layout(self):
+        """Create the main exam layout with video feed area"""
+        # Main content frame (75% width)
+        self.main_frame = tk.Frame(self.root, bg=self.colors["bg_primary"])
+        self.main_frame.place(relx=0, rely=0, relwidth=0.75, relheight=1)
+        # Right panel for video feed and monitoring (25% width)
+        self.monitor_frame = tk.Frame(self.root, bg=self.colors["bg_secondary"])
+        self.monitor_frame.place(relx=0.75, rely=0, relwidth=0.25, relheight=1)
+        # Timer at top of monitor panel
+        self.timer_frame = tk.Frame(self.monitor_frame, bg=self.colors["bg_secondary"])
+        self.timer_frame.pack(fill="x", padx=10, pady=10)
+        timer_label = tk.Label(self.timer_frame, text="Time Remaining",
+                              font=("Arial", 12, "bold"),
+                              bg=self.colors["bg_secondary"],
+                              fg=self.colors["text_secondary"])
+        timer_label.pack()
+        self.timer_display = tk.Label(self.timer_frame, text="30:00",
+                                     font=("Arial", 20, "bold"),
+                                     bg=self.colors["bg_secondary"],
+                                     fg=self.colors["warning"])
+        self.timer_display.pack()
 
-    # Monitoring output area (Initially hidden)
-    self.monitoring_output = tk.Frame(controls_frame, bg=self.colors["bg_primary"], height=100)
-    self.monitoring_text = tk.Text(self.monitoring_output, font=("Consolas", 8),
-                      bg=self.colors["bg_primary"], fg=self.colors["text_primary"],
-                      relief="flat", bd=0, height=10, wrap="word")
-    self.monitoring_text.pack(fill="both", expand=True, padx=5, pady=5)
-    self.close_monitor_btn = tk.Button(self.monitoring_output, text="✕ Close",
-                      font=("Arial", 8), bg=self.colors["danger"],
-                      fg="white", relief="flat", bd=0,
-                      command=self.close_monitoring)
-    self.close_monitor_btn.pack(pady=2)
+        # Monitoring controls (Top row of right panel)
+        controls_frame = tk.Frame(self.monitor_frame, bg=self.colors["bg_secondary"])
+        controls_frame.pack(fill="x", padx=5, pady=(0, 5))
+        tk.Label(controls_frame, text="🔧 Monitor Controls",
+            font=("Arial", 10, "bold"),
+            bg=self.colors["bg_secondary"],
+            fg=self.colors["text_secondary"]).pack()
+        btn_frame = tk.Frame(controls_frame, bg=self.colors["bg_secondary"])
+        btn_frame.pack(fill="x", pady=5)
+        # Add buttons for each script
+        script_buttons = [
+            ("Devices", self.show_devices_monitor),
+            ("Network", self.show_network_monitor),
+            ("Background Apps", self.show_background_apps),
+            ("Eye/Head Tracking", self.show_eyehead_tracking)
+        ]
+        for i, (text, cmd) in enumerate(script_buttons):
+            btn = tk.Button(btn_frame, text=text, font=("Arial", 8),
+                   bg=self.colors["accent"], fg="white",
+                   relief="flat", bd=0, width=14, height=2,
+                   command=cmd)
+            btn.grid(row=i//2, column=i%2, padx=2, pady=2, sticky="ew")
+        btn_frame.grid_columnconfigure(0, weight=1)
+        btn_frame.grid_columnconfigure(1, weight=1)
 
-    # Video feed area (Bottom row of right panel)
-    self.video_frame = tk.Frame(self.monitor_frame, bg=self.colors["bg_primary"], relief="solid", bd=1)
-    self.video_frame.pack(fill="both", expand=True, padx=5, pady=(0, 5))
-    tk.Label(self.video_frame, text="📹 Live Video Feed",
-        font=("Arial", 10, "bold"),
-        bg=self.colors["bg_primary"],
-        fg=self.colors["text_secondary"]).pack(pady=5)
-    self.video_label = tk.Label(self.video_frame, text="Click 'Eye/Head Tracking' to start",
-                    font=("Arial", 9),
-                    bg=self.colors["bg_primary"],
-                    fg=self.colors["text_secondary"],
-                    justify="center")
-    self.video_label.pack(expand=True)
+        # Monitoring output area (Initially hidden)
+        self.monitoring_output = tk.Frame(controls_frame, bg=self.colors["bg_primary"], height=100)
+        self.monitoring_text = tk.Text(self.monitoring_output, font=("Consolas", 8),
+                          bg=self.colors["bg_primary"], fg=self.colors["text_primary"],
+                          relief="flat", bd=0, height=10, wrap="word")
+        self.monitoring_text.pack(fill="both", expand=True, padx=5, pady=5)
+        self.close_monitor_btn = tk.Button(self.monitoring_output, text="✕ Close",
+                          font=("Arial", 8), bg=self.colors["danger"],
+                          fg="white", relief="flat", bd=0,
+                          command=self.close_monitoring)
+        self.close_monitor_btn.pack(pady=2)
+
+        # Video feed area (Bottom row of right panel)
+        self.video_frame = tk.Frame(self.monitor_frame, bg=self.colors["bg_primary"], relief="solid", bd=1)
+        self.video_frame.pack(fill="both", expand=True, padx=5, pady=(0, 5))
+        tk.Label(self.video_frame, text="📹 Live Video Feed",
+            font=("Arial", 10, "bold"),
+            bg=self.colors["bg_primary"],
+            fg=self.colors["text_secondary"]).pack(pady=5)
+        self.video_label = tk.Label(self.video_frame, text="Click 'Eye/Head Tracking' to start",
+                        font=("Arial", 9),
+                        bg=self.colors["bg_primary"],
+                        fg=self.colors["text_secondary"],
+                        justify="center")
+        self.video_label.pack(expand=True)
     # --- Script integration methods ---
     def show_devices_monitor(self):
         self.monitoring_output.pack(fill="x", pady=(5, 0))
