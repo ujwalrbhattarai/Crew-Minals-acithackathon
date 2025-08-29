@@ -1,0 +1,15 @@
+{
+    "timestamp": "2025-08-29 10:50:58",
+    "score": 0,
+    "total_questions": 2,
+    "percentage": 0.0,
+    "time_taken_minutes": 3.3,
+    "time_remaining_minutes": 26.7,
+    "status": "Needs Improvement",
+    "monitoring_flags": [
+        "Face detection: Active",
+        "Network monitoring: Stable",
+        "Window focus: Maintained",
+        "Suspicious activity: None detected"
+    ]
+}

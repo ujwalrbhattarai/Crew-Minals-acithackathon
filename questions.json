@@ -1,0 +1,12 @@
+[
+  {
+    "question": "What is 2 + 2?",
+    "options": ["1", "2", "3", "4", "5"],
+    "answer": "4"
+  },
+  {
+    "question": "Which protocol is used for web traffic?",
+    "options": ["FTP", "SMTP", "HTTP", "SSH", "DNS"],
+    "answer": "HTTP"
+  }
+]
