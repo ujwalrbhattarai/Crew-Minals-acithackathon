@@ -1,10 +1,10 @@
 {
-    "timestamp": "2025-08-29 11:39:29",
+    "timestamp": "2025-08-29 12:20:00",
     "score": 0,
     "total_questions": 2,
     "percentage": 0.0,
-    "time_taken_minutes": 1.9,
-    "time_remaining_minutes": 28.1,
+    "time_taken_minutes": 1.2,
+    "time_remaining_minutes": 28.8,
     "status": "Needs Improvement",
     "monitoring_flags": [
         "Face detection: Active",
