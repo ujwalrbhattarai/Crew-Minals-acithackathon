@@ -1,45 +1,55 @@
+import socket
 import psutil
 import time
-import datetime
+from datetime import datetime
+from collections import defaultdict
 
-# How often to check (seconds)
-INTERVAL = 1  
+def resolve_host(ip):
+    """Resolve IP to hostname/domain"""
+    try:
+        hostname = socket.gethostbyaddr(ip)[0]
+        # Extract domain name (remove subdomains if needed)
+        return hostname
+    except (socket.herror, socket.gaierror):
+        return ip
 
-# Counters for packet violations (just like your face/eye violations)
-packet_in_counter = 0
-packet_out_counter = 0
+def get_active_connections():
+    """Get active network connections using psutil"""
+    connections = []
+    for conn in psutil.net_connections(kind='inet'):
+        if conn.status == 'ESTABLISHED' and conn.raddr:
+            connections.append({
+                'remote_ip': conn.raddr.ip if hasattr(conn.raddr, 'ip') else conn.raddr[0],
+                'remote_port': conn.raddr.port if hasattr(conn.raddr, 'port') else conn.raddr[1]
+            })
+    return connections
 
-# Track last values
-old_stats = psutil.net_io_counters()
+def monitor_network():
+    """Monitor network connections and show time + domain names"""
+    print("Network Activity Monitor - Time and Domains")
+    print("=" * 50)
+    
+    seen_domains = set()
+    
+    try:
+        while True:
+            current_time = datetime.now().strftime("%H:%M:%S")
+            current_connections = get_active_connections()
+            
+            for conn in current_connections:
+                remote_ip = conn['remote_ip']
+                domain = resolve_host(remote_ip)
+                
+                # Only show new domains or refresh every 30 seconds
+                domain_key = domain
+                if domain_key not in seen_domains:
+                    seen_domains.add(domain_key)
+                    print(f"[{current_time}] {domain}")
+            
+            time.sleep(5)  # Check every 5 seconds
+            
+    except KeyboardInterrupt:
+        print(f"\n[{datetime.now().strftime('%H:%M:%S')}] Network monitoring stopped.")
 
-print("Monitoring network traffic (Ctrl+C to stop)...")
-
-try:
-    while True:
-        time.sleep(INTERVAL)
-
-        # Current stats
-        new_stats = psutil.net_io_counters()
-
-        # Calculate packet differences
-        packets_sent = new_stats.packets_sent - old_stats.packets_sent
-        packets_recv = new_stats.packets_recv - old_stats.packets_recv
-
-        # Update counters
-        if packets_sent > 0:
-            packet_out_counter += packets_sent
-        if packets_recv > 0:
-            packet_in_counter += packets_recv
-
-        # Display info
-        now = datetime.datetime.now().strftime("%H:%M:%S")
-        print(f"[{now}] IN: {packets_recv} OUT: {packets_sent} "
-              f"| Total IN: {packet_in_counter} OUT: {packet_out_counter}")
-
-        # Save current stats for next loop
-        old_stats = new_stats
-
-except KeyboardInterrupt:
-    print("\nStopped monitoring.")
-    print(f"Total Packets Received: {packet_in_counter}")
-    print(f"Total Packets Sent: {packet_out_counter}")
+if __name__ == "__main__":
+    monitor_network()
