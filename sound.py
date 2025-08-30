@@ -8,7 +8,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 MAX_RMS = 1200  # Reduced for higher sensitivity
-THRESHOLD = 500  # RMS threshold for violation
+THRESHOLD = 5  # RMS threshold for violation
 
 # Initialize PyAudio
 p = pyaudio.PyAudio()
